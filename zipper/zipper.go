@@ -12,8 +12,8 @@ import (
 	"github.com/carlmjohnson/monterey-jack/taskpool"
 )
 
-// All calls FromPath for all files in root matching a glob.
-func All(root string, globs ...string) error {
+// All calls FromPath for all files in root matching an extension.
+func All(root string, exts ...string) error {
 	tp, _ := taskpool.New(context.Background(), runtime.NumCPU())
 
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
@@ -21,17 +21,16 @@ func All(root string, globs ...string) error {
 			return err
 		}
 
-		base := filepath.Base(path)
-
 		if info.IsDir() {
-			if strings.HasPrefix(base, ".") {
+			if dirname := filepath.Base(path); strings.HasPrefix(dirname, ".") {
 				return filepath.SkipDir
 			}
 			return nil
 		}
 
-		for _, glob := range globs {
-			if matched, _ := filepath.Match(glob, base); matched {
+		fext := filepath.Ext(path)
+		for _, ext := range exts {
+			if ext == fext {
 				tp.Go(func() error { return FromPath(path) })
 				return nil
 			}

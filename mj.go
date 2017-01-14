@@ -16,5 +16,5 @@ func main() {
 func run() error {
 	flag.Parse()
 	return zipper.All(flag.Arg(0),
-		"*.html", "*.htm", "*.css", "*.js", "*.svg", "*.xml")
+		".html", ".htm", ".css", ".js", ".svg", ".xml")
 }
