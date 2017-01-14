@@ -1,11 +1,9 @@
-package main
+package zipper
 
 import (
 	"compress/gzip"
 	"context"
-	"flag"
 	"io"
-	"log"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -14,18 +12,8 @@ import (
 	"github.com/carlmjohnson/monterey-jack/taskpool"
 )
 
-func main() {
-	if err := run(); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func run() error {
-	flag.Parse()
-	return gzipAll(flag.Arg(0))
-}
-
-func gzipAll(root string) error {
+// All calls FromPath for all files in root matching a glob.
+func All(root string, globs ...string) error {
 	tp, _ := taskpool.New(context.Background(), runtime.NumCPU())
 
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
@@ -42,9 +30,9 @@ func gzipAll(root string) error {
 			return nil
 		}
 
-		for _, glob := range []string{"*.html", "*.htm", "*.css", "*.js", "*.svg"} {
+		for _, glob := range globs {
 			if matched, _ := filepath.Match(glob, base); matched {
-				tp.Go(func() error { return gzipPath(path) })
+				tp.Go(func() error { return FromPath(path) })
 				return nil
 			}
 		}
@@ -58,7 +46,8 @@ func gzipAll(root string) error {
 	return tp.Wait()
 }
 
-func gzipPath(srcname string) error {
+// FromPath gzips a file from the given source pathname to that path plus ".gz".
+func FromPath(srcname string) error {
 	destname := srcname + ".gz"
 
 	// log.Printf("Gzipping %s to %s", srcname, destname)
