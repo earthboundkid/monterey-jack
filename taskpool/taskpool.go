@@ -52,7 +52,7 @@ func (tp TaskPool) start(ctx context.Context, cancel context.CancelFunc, size in
 		nextTask task
 		tasks    []task
 		taskC    chan task
-		waitC    chan error
+		waitC    = tp.wait
 		running  int
 	)
 
