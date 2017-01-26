@@ -60,7 +60,6 @@ func (tp TaskPool) start(ctx context.Context, cancel context.CancelFunc, size in
 		select {
 		case <-ctx.Done():
 			tp.wait <- ctx.Err()
-			log.Println("58")
 			return
 
 		case t := <-tp.add:
@@ -76,7 +75,6 @@ func (tp TaskPool) start(ctx context.Context, cancel context.CancelFunc, size in
 		case err := <-result:
 			if err != nil {
 				tp.wait <- err
-				log.Println("72")
 				return
 			}
 			running--
