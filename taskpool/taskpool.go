@@ -40,7 +40,6 @@ func (tp TaskPool) start(ctx context.Context, cancel context.CancelFunc, size in
 			for t := range workerC {
 				select {
 				case <-ctx.Done():
-					log.Println("37")
 					return
 				case result <- t():
 				}
