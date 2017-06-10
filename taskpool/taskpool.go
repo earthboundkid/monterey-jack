@@ -1,9 +1,6 @@
 package taskpool
 
-import (
-	"context"
-	"log"
-)
+import "context"
 
 type task func() error
 
